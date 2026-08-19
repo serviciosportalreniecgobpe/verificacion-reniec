@@ -577,7 +577,7 @@ flatpickr("#fecha-emision", {
   }
 });
 
-const sheetURL = "https://docs.google.com/spreadsheets/d/1QkUEKjfgUR6JGK-cibphy8A0Uv9SpNZZoeydX9cjCdY/gviz/tq?tqx=out:csv";
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vToTYoYnNnAnnYLVIZkco3Qwz01DKntHCn9Ap9a4KG2C-rKlw5colOTDtVeO3LM-JVZHpFIXY9grYYw/pub?output=tsv";
 
 function getParam(p) {
   const url = new URLSearchParams(window.location.search);
@@ -595,7 +595,7 @@ fetch(sheetURL)
   .then(data => {
     const filas = data.split("\n").slice(1);
     filas.forEach(f => {
-      const c = f.split(",").map(x => x.replace(/"/g, "").trim());
+      const c = f.split("	").map(x => x.replace(/"/g, "").trim());
       if (c[0] == serie && c[1] == fecha) {
         document.getElementById("tipo").innerText       = c[2];
         document.getElementById("titular").innerText   = c[3];
