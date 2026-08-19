@@ -596,8 +596,6 @@ fetch(sheetURL)
     const filas = data.replace(/\r/g, "").split("\n");
     filas.forEach(f => {
       if (!f.trim()) return;
-      
-      // Detecta comas o tabulaciones y limpia comillas y espacios de cada celda
       const c = f.split(/,|\t/).map(x => x.replace(/^["'\s]+|["'\s]+$/g, "").trim());
       
       if (c[0] === serie && c[1] === fecha) {
