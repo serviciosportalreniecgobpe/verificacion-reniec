@@ -581,7 +581,7 @@ const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vToTYoYnNnAnnY
 
 function getParam(p) {
   const url = new URLSearchParams(window.location.search);
-  return url.get(p);
+  return (url.get(p) || "").trim();
 }
 
 const serie = getParam("serie");
@@ -590,23 +590,42 @@ const fecha = getParam("fecha");
 if (serie) document.getElementById("serie").value = serie;
 if (fecha) document.getElementById("fecha-emision").value = fecha;
 
-fetch(sheetURL)
-  .then(res => res.text())
-  .then(data => {
-    const filas = data.replace(/\r/g, "").split("\n");
-    filas.forEach(f => {
-      if (!f.trim()) return;
-      const c = f.split(/,|\t/).map(x => x.replace(/^["'\s]+|["'\s]+$/g, "").trim());
-      
-      if (c[0] === serie && c[1] === fecha) {
-        document.getElementById("tipo").innerText        = c[2] || "";
-        document.getElementById("titular").innerText     = c[3] || "";
-        document.getElementById("dni").innerText         = c[4] || "";
-        document.getElementById("solicitante").innerText = c[5] || "";
-      }
-    });
-  });
+// URL cambiada a salida CSV para evitar bloqueos de formato
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vToTYoYnNnAnnYLVIZkco3Qwz01DKntHCn9Ap9a4KG2C-rKlw5colOTDtVeO3LM-JVZHpFIXY9grYYw/pub?output=csv";
 
+if (serie && fecha) {
+  fetch(sheetURL)
+    .then(res => {
+      if (!res.ok) throw new Error("Error al consultar Google Sheets");
+      return res.text();
+    })
+    .then(data => {
+      const filas = data.replace(/\r/g, "").split("\n");
+      
+      let encontrado = false;
+
+      filas.forEach(f => {
+        if (!f.trim()) return;
+
+        // Separar por comas respetando comillas
+        const c = f.split(",").map(x => x.replace(/^["'\s]+|["'\s]+$/g, "").trim());
+
+        // Comparación insensible a espacios
+        if (c[0] === serie && c[1] === fecha) {
+          document.getElementById("tipo").innerText        = c[2] || "";
+          document.getElementById("titular").innerText     = c[3] || "";
+          document.getElementById("dni").innerText         = c[4] || "";
+          document.getElementById("solicitante").innerText = c[5] || "";
+          encontrado = true;
+        }
+      });
+
+      if (!encontrado) {
+        console.warn("No se encontraron registros para la Serie y Fecha ingresadas.");
+      }
+    })
+    .catch(err => console.error("Fallo al cargar datos:", err));
+}
 </script>
 </body>
 </html>
