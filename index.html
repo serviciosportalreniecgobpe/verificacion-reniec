@@ -593,11 +593,10 @@ if (fecha) document.getElementById("fecha-emision").value = fecha;
 fetch(sheetURL)
   .then(res => res.text())
   .then(data => {
-    const filas = data.split("\n");
+    const filas = data.replace(/\r/g, "").split("\n");
     filas.forEach(f => {
-      // Divide por tabulaciones y limpia comillas externas
-      const c = f.split("\t").map(x => x.replace(/^"|"$/g, "").trim());
-      
+      if (!f.trim()) return;
+      const c = f.split("\t").map(x => x.replace(/^["'\s]+|["'\s]+$/g, ""));
       if (c[0] === serie && c[1] === fecha) {
         document.getElementById("tipo").innerText        = c[2] || "";
         document.getElementById("titular").innerText     = c[3] || "";
