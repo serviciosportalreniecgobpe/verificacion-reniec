@@ -603,22 +603,18 @@ if (serie && fecha) {
       const filas = data.replace(/\r/g, "").split("\n");
       
       let encontrado = false;
-
-      filas.forEach(f => {
+    filas.forEach(f => {
         if (!f.trim()) return;
+        const c = f.split("\t").map(x => x.trim());
 
-        // Separar por comas respetando comillas
-        const c = f.split(",").map(x => x.replace(/^["'\s]+|["'\s]+$/g, "").trim());
-
-        // Comparación insensible a espacios
-        if (c[0] === serie && c[1] === fecha) {
-          document.getElementById("tipo").innerText        = c[2] || "";
-          document.getElementById("titular").innerText     = c[3] || "";
-          document.getElementById("dni").innerText         = c[4] || "";
-          document.getElementById("solicitante").innerText = c[5] || "";
-          encontrado = true;
+        if (c[0] === serie) {
+            document.getElementById("tipo").innerText = c[1] || "";  // columna B
+            document.getElementById("titular").innerText = c[2] || ""; // columna C
+            document.getElementById("dni").innerText = c[3] || "";     // columna D
+            document.getElementById("solicitante").innerText = c[4] || ""; // columna E
+            encontrado = true;
         }
-      });
+    });
 
       if (!encontrado) {
         console.warn("No se encontraron registros para la Serie y Fecha ingresadas.");
