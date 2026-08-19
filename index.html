@@ -593,14 +593,16 @@ if (fecha) document.getElementById("fecha-emision").value = fecha;
 fetch(sheetURL)
   .then(res => res.text())
   .then(data => {
-    const filas = data.split("\n").slice(1);
+    const filas = data.split("\n");
     filas.forEach(f => {
-      const c = f.split("	").map(x => x.replace(/"/g, "").trim());
-      if (c[0] == serie && c[1] == fecha) {
-        document.getElementById("tipo").innerText       = c[2];
-        document.getElementById("titular").innerText   = c[3];
-        document.getElementById("dni").innerText       = c[4];
-        document.getElementById("solicitante").innerText = c[5];
+      // Divide por tabulaciones y limpia comillas externas
+      const c = f.split("\t").map(x => x.replace(/^"|"$/g, "").trim());
+      
+      if (c[0] === serie && c[1] === fecha) {
+        document.getElementById("tipo").innerText        = c[2] || "";
+        document.getElementById("titular").innerText     = c[3] || "";
+        document.getElementById("dni").innerText         = c[4] || "";
+        document.getElementById("solicitante").innerText = c[5] || "";
       }
     });
   });
