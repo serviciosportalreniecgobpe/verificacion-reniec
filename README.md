@@ -1,1 +1,1 @@
-# verificacionqr
+# verificacion-reniec
